@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>You aint playing games!</title>
+	<style>
+	body{
+		background-color: #212121;
+		width: 100%;
+  		color: #f8f8f8;
+	}
+
+	
+	
+</style>
+</head>
+<body>
+	<canvas id="canvas" width="500px" height="500px" style="border: 1px solid black"></canvas>
+
+
+
+	
+	<script>
+
+		let canvas;
+		let context;
+		let secondsPassed = 0;
+		let oldTimeStamp = 0;
+		let timePassed = 0;
+		let fps;
+		let rectX = 0;
+		let rectY = 0;
+		let movingSpeed = 50;
+		let facing;
+
+		window.onload = init;
+
+		function init(){
+			canvas = document.getElementById('canvas');
+			context = canvas.getContext('2d');	
+			
+			window.requestAnimationFrame(gameLoop);
+		}
+
+		function gameLoop(timeStamp){
+			secondsPassed = (timeStamp - oldTimeStamp) / 1000;
+			oldTimeStamp = timeStamp;
+
+			update();
+			draw();
+		
+			window.requestAnimationFrame(gameLoop);
+			window.addEventListener("keydown", movePlayer);
+		}
+
+		function update(){
+
+			timePassed += secondsPassed;
+
+			if(facing === 0){
+				rectY -= (movingSpeed * secondsPassed);
+			}
+			if(facing === 1){
+				rectX -= (movingSpeed * secondsPassed);
+			}
+			if(facing === 2){
+				rectY += (movingSpeed * secondsPassed);;
+			}
+			if(facing === 3){
+				rectX += (movingSpeed * secondsPassed);
+			}
+
+			//rectX += (movingSpeed * secondsPassed);
+			//rectY += (movingSpeed * secondsPassed);
+		}
+
+		function movePlayer(event){
+			if(event.key === "w"){
+				facing = 0;
+			}
+			if(event.key === "a"){
+				facing = 1;
+				
+			}
+			if(event.key === "s"){
+				facing = 2;
+				
+			}
+			if(event.key === "d"){
+				facing = 3;
+				
+			}
+		}
+
+
+		function draw(){
+			context.clearRect(0, 0, canvas.width, canvas.height);
+
+			context.fillStyle = '#ffffff';
+			context.lineWidht = 5;
+			context.strokeStyle = 'black';
+			context.beginPath();
+			context.arc(rectX, rectY, 10, 0, 2 * Math.PI);
+
+			context.stroke();
+			context.fill();
+			
+		}
+		
+		
+</script>
+</body>
+</html>

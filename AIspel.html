@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>You aint playing games!</title>
+	<style>
+	body{
+		background-color: #212121;
+		width: 100%;
+  		color: #f8f8f8;
+		text-align: center;
+	}
+	#canvas{
+		background-color: #CBCBA0;
+	}
+
+	
+	
+</style>
+</head>
+<body>
+	<canvas id="canvas" width="500px" height="500px" style="border: 1px solid black"></canvas>
+
+
+
+	
+	<script>
+
+		let canvas;
+		let context;
+		let secondsPassed = 0;
+		let oldTimeStamp = 0;
+		let timePassed = 0;
+		let fps;
+		let rectX = 10;
+		let rectY = 10;
+		let movingSpeed = 50;
+		let facing;
+		let keys = {};
+		let wallY = 500;
+		let wallColor = '#336600'
+		let holeX = 210;
+		let gameOver = false;
+		let coinY = 250;
+		let coinX = 250;
+		let score = 0;
+
+		function keyEventHandler(event){
+			keys[event.code] = event.type === "keydown";
+			event.preventDefault();
+		}
+
+		window.addEventListener("keydown", keyEventHandler);
+		window.addEventListener("keyup", keyEventHandler);
+
+		window.onload = init;
+
+		function init(){
+			canvas = document.getElementById('canvas');
+			context = canvas.getContext('2d');	
+			
+			window.requestAnimationFrame(gameLoop);
+		}
+
+		function gameLoop(timeStamp){
+			secondsPassed = (timeStamp - oldTimeStamp) / 1000;
+			oldTimeStamp = timeStamp;
+			if(gameOver){
+				return;
+			}
+
+			doPlayerMove();
+			draw();
+			gameChecks();
+		
+			window.requestAnimationFrame(gameLoop);
+			
+		}
+
+		function doPlayerMove(){
+
+			if(keys.ArrowUp && rectY > 10){
+				rectY -= 1;
+			}
+			if(keys.ArrowDown && rectY < 490){
+				rectY += 1;
+			}
+			if(keys.ArrowLeft && rectX > 10){
+				rectX -= 1;
+			}
+			if(keys.ArrowRight && rectX < 490 ){
+				rectX += 1;
+			}
+		}
+
+		function gameChecks(){
+
+			if(((wallY <= rectY && rectY <= wallY+50) && !(holeX <= rectX && rectX <= holeX+60))){
+				gameOver = true;
+			}
+			if(wallY < 0){
+				wallY = 500;
+				holeX = Math.random() * 460
+			}
+
+			if((coinY <= rectY+20 && rectY <= coinY+14) && (coinX <= rectX+20 && rectX <= coinX+14)){
+				score++;
+				coinY = (Math.random() * 300) + 100;
+				coinX = (Math.random() * 300) + 100;
+			}
+			if(score < 8 ){
+				wallY -= 0.2;
+
+			}
+			if(score >= 8 && score < 15){
+				wallY -= 0.4;
+				wallColor = '#E1B530'
+			}
+			if(score >= 15 && score < 25){
+				wallY -= 0.8;
+				wallColor = '#880808'
+			}
+			if(score >= 25){
+				wallY -= 1 + score/100;
+				wallColor = '#000000'
+			}
+
+		}
+		
+
+
+		function draw(){
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			
+			
+			//scoreBoard
+			context.fillStyle = 'green';
+			context.fillRect(416, 0, 60, 20)
+
+			context.fillStyle = 'black';
+			if(score === 0){
+				context.fillText("Score: 0", 420, 10)
+			}else{
+				context.fillText("Score: " + score, 420, 10)
+			}
+			
+
+			//wall
+			context.fillStyle = wallColor;
+			context.fillRect(0, wallY, 500, 30)
+
+			//coin
+			context.beginPath();
+			context.fillStyle = '#E1B530';
+			context.lineWidht = 100;
+			context.arc(coinX, coinY, 7, 0, 2 * Math.PI);
+			context.strokeStyle = 'black';
+			context.stroke();
+			context.fill();
+			
+			//Hole
+			context.fillStyle = '#CBCBA0';
+			context.fillRect(holeX, wallY-1, 70, 32)
+
+			//character
+			context.beginPath();
+			context.fillStyle = '#ffffff';
+			context.lineWidht = 100;
+			context.arc(rectX, rectY, 10, 0, 2 * Math.PI);
+			context.strokeStyle = 'black';
+			context.stroke();
+			context.fill();
+
+			
+
+			
+		}
+		
+		
+</script>
+</body>
+</html>
